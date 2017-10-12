@@ -1,0 +1,1 @@
+export default (err) => err instanceof Error
