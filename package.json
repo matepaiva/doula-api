@@ -36,8 +36,12 @@
     "babel-plugin-transform-object-rest-spread": "^6.26.0",
     "babel-preset-env": "^1.4.0",
     "body-parser": "^1.17.1",
+    "camo": "^0.12.3",
     "express": "^4.15.2",
+    "lodash": "^4.17.4",
+    "mongodb": "^2.2.31",
     "morgan": "^1.7.0",
+    "node-emoji": "^1.8.1",
     "pug": "^2.0.0-beta11",
     "rimraf": "^2.6.1",
     "throw.js": "^3.0.1"
@@ -90,7 +94,12 @@
     "rules": {
       "jest/no-focused-tests": 2,
       "jest/no-identical-title": 2,
-      "no-unused-vars": [ 2, { "argsIgnorePattern": "next" } ]
+      "no-unused-vars": [
+        2,
+        {
+          "argsIgnorePattern": "next"
+        }
+      ]
     }
   },
   "jest": {
