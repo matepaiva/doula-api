@@ -13,7 +13,7 @@
   "scripts": {
     "prestart": "npm run -s build",
     "start": "node dist/index.js",
-    "dev": "nodemon src/index.js --exec \"node -r dotenv/config -r babel-register\"",
+    "dev": "nodemon --inspect=22688 src/index.js --exec \"node -r dotenv/config -r babel-register\"",
     "clean": "rimraf dist",
     "build": "npm run clean && mkdir -p dist && babel src -s -D -d dist",
     "test": "jest --watch",
@@ -35,16 +35,20 @@
     "babel-cli": "^6.24.1",
     "babel-plugin-transform-object-rest-spread": "^6.26.0",
     "babel-preset-env": "^1.4.0",
+    "bluebird": "^3.5.1",
     "body-parser": "^1.17.1",
-    "camo": "^0.12.3",
     "express": "^4.15.2",
     "express-jwt": "^5.3.0",
+    "googleapis": "^22.2.0",
     "jsonwebtoken": "^8.1.0",
     "lodash": "^4.17.4",
     "mongodb": "^2.2.31",
+    "mongoose": "^4.12.1",
+    "mongoose-actor": "0.0.2",
     "morgan": "^1.7.0",
     "node-emoji": "^1.8.1",
-    "pug": "^2.0.0-beta11",
+    "passport": "^0.4.0",
+    "passport-google-oauth20": "^1.0.0",
     "rimraf": "^2.6.1",
     "throw.js": "^3.0.1"
   },
@@ -54,6 +58,9 @@
     "babel-register": "^6.24.1",
     "dotenv": "^4.0.0",
     "eslint": "^4.6.1",
+    "eslint-config-standard": "^10.2.1",
+    "eslint-plugin-node": "^5.2.1",
+    "eslint-plugin-promise": "^3.6.0",
     "eslint-plugin-import": "^2.2.0",
     "eslint-plugin-jest": "^21.0.2",
     "eslint-watch": "^3.1.0",
@@ -91,11 +98,12 @@
       "jest": true
     },
     "extends": [
-      "eslint:recommended"
+      "standard"
     ],
     "rules": {
       "jest/no-focused-tests": 2,
       "jest/no-identical-title": 2,
+      "no-console": 0,
       "no-unused-vars": [
         2,
         {

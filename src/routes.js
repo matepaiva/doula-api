@@ -1,21 +1,44 @@
+// #region NODE_MODULES IMPORT
 import { Router } from 'express'
 import jwtValidator from 'express-jwt'
 import errors from 'throw.js'
+import google from 'googleapis'
+// #endregion
 
+// #region LOCAL IMPORT
 import * as controllers from './controllers'
+// #endregion
 
-const { JWT_SECRET } = process.env
+// #region GLOBAL CONSTANTS
+const { JWT_SECRET, GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET } = process.env
+const plus = google.plus('v1')
+const OAuth2 = google.auth.OAuth2;
+const oauth2Client = new OAuth2(GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET, '')
+// #endregion
 
+// #region Creating instances of Router() to create public and private routes
 const routes = Router()
+const publicRoutes = Router()
+const privateRoutes = Router()
+// #endregion
 
-routes.use(jwtValidator({ secret: JWT_SECRET }).unless({ path: [
-  '/token'
-] }))
-routes.use((err, req, res, next) => err.name === 'UnauthorizedError' && next(new errors.Unauthorized()))
+// #region Validating JWT for every private route
+privateRoutes.use(jwtValidator({ secret: JWT_SECRET }))
+privateRoutes.use((err, req, res, next) => err.name === 'UnauthorizedError' && next(new errors.Unauthorized()))
+// #endregion
 
-routes.get('/', controllers.root.get)
-routes.get('/token', controllers.root.authenticate)
-routes.get('/list', controllers.list.get)
+// #region ROUTES
+privateRoutes.get('/', controllers.root.get)
+privateRoutes.get('/list', controllers.list.get)
 
+publicRoutes.get('/token', controllers.users.authenticate)
 
+// USER ROUTES
+publicRoutes.post('/users', controllers.users.create, controllers.users.authenticate)
+// #endregion
+
+// #region Injecting public and private routes to server router
+routes.use(publicRoutes)
+routes.use(privateRoutes)
 export default routes
+// #endregion

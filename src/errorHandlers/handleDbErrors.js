@@ -14,6 +14,13 @@ export default ({ message }) => {
     )
   }
 
+  if (message.toLowerCase().includes('access denied')) {
+    return new errors.Forbidden(
+      'Acesso negado.', 
+      _originalError(message)
+    )
+  }
+
   if (message.includes('required')) {
     return new errors.UnprocessableEntity(
       `Existem campos obrigatórios que não estão preenchidos.`, 

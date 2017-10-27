@@ -1,5 +1,8 @@
 import errors from 'throw.js'
 
+import { User } from '../../model/index'
+import { isError, handleDbErrors } from '../../errorHandlers'
+
 /**
  * GET /list
  *
@@ -9,12 +12,14 @@ import errors from 'throw.js'
  * create different/better error handlers depending on
  * your use case.
  */
-export const get = (req, res, next) => {
+export const get = async (req, res, next) => {
   const { title } = req.query
 
   if (title == null || title === '') {
     return next(new errors.UnprocessableEntity('The "title" parameter is required', '422.001'))
   }
 
-  res.json({ title })
+  if (isError(user)) return next(handleDbErrors(user))
+  
+  res.json(user)
 }
