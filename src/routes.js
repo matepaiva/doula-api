@@ -7,6 +7,8 @@ import google from 'googleapis'
 
 // #region LOCAL IMPORT
 import * as controllers from './controllers'
+import noop from './utils/noop'
+import { requiredParams } from './controllers/root/root.controller'
 // #endregion
 
 // #region GLOBAL CONSTANTS
@@ -31,11 +33,14 @@ privateRoutes.use((err, req, res, next) => err.name === 'UnauthorizedError' && n
 privateRoutes.get('/', controllers.root.get)
 privateRoutes.get('/list', controllers.list.get)
 
-publicRoutes.get('/token', controllers.users.authenticate)
-
-// USER ROUTES
-publicRoutes.post('/users', controllers.users.create, controllers.users.authenticate)
-// #endregion
+publicRoutes.post('/auth/pw', 
+  requiredParams([ 'email', 'password' ]), 
+  controllers.users.authenticateFromPassword, 
+  controllers.users.create, 
+  controllers.users.generateJWT
+)
+publicRoutes.post('/auth/google', controllers.users.authenticateFromGoogle, controllers.users.create, controllers.users.generateJWT)
+publicRoutes.post('/auth/facebook', noop)
 
 // #region Injecting public and private routes to server router
 routes.use(publicRoutes)

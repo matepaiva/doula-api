@@ -35,6 +35,7 @@
     "babel-cli": "^6.24.1",
     "babel-plugin-transform-object-rest-spread": "^6.26.0",
     "babel-preset-env": "^1.4.0",
+    "bcrypt": "^1.0.3",
     "bluebird": "^3.5.1",
     "body-parser": "^1.17.1",
     "express": "^4.15.2",
@@ -86,6 +87,8 @@
   "eslintConfig": {
     "parser": "babel-eslint",
     "plugins": [
+      "node",
+      "promise",
       "import",
       "jest"
     ],
