@@ -1,0 +1,7 @@
+export const badRequest = 'Esses dados não fazem sentido!'
+export const unprocessableEntity = 'Erro na validação. Há algo de errado com os dados apresentados.'
+export const forbidden = 'Acesso negado.'
+export const missingParameters = 'Existem campos obrigatórios que não estão preenchidos.'
+export const conflict = 'Criatividade! Registro repetido.'
+export const internalServerError = 'Aconteceu algo muito estranho no servidor. Alguém ocasionalmente verificará isso.'
+export const wrongPassword = 'Usuário e senha não conferem.'
