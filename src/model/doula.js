@@ -4,13 +4,13 @@ const doulaSchema = mongoose.Schema({
   certifiedBy: {
     type: String
   },
-  yearsExp: { 
-    type: Number, 
-    min: 0, 
+  yearsExp: {
+    type: Number,
+    min: 0
   },
-  backupDoula: { 
-    type: mongoose.Schema.Types.ObjectId, 
-    ref: 'Doula' 
+  backupDoula: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Doula'
   },
   clients: [{
     user: {
@@ -24,4 +24,15 @@ const doulaSchema = mongoose.Schema({
   }
 }, { timestamps: true })
 
-export default mongoose.model('Doula', doulaSchema)
+doulaSchema.virtual('newClient')
+  .set(function (user) {
+    this._addClient = user
+    if (this.clients.every(client => !client.user.equals(user))) {
+      this.clients.addToSet({ user })
+    }
+  })
+  .get(function () {
+    return this._addClient
+  })
+
+export default doulaSchema

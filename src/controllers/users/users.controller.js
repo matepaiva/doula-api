@@ -1,10 +1,10 @@
 import jwt from 'jsonwebtoken'
 import _ from 'lodash'
 import errors from 'throw.js'
-import bcrypt from 'bcrypt'
+import * as messages from '../../i18n/messages'
 
 import { User } from '../../model/index'
-import { isError, handleDbErrors } from '../../errorHandlers'
+import { isError, handleErrors } from '../../errorHandlers'
 
 const { JWT_SECRET } = process.env
 
@@ -13,58 +13,41 @@ export const authenticateFromPassword = async (req, res, next) => {
     const { email, password } = req._params
 
     const user = await User.findOne({ email }, 'password _id roles')
-    if (isError(user)) return next(handleDbErrors(user))
+    if (isError(user)) return next(handleErrors(user))
 
-    req._newUser = user ? false : true
+    req._isNew = !user
 
-    if (user && !bcrypt.compareSync(password, user.password)) {
-      return next(new errors.Unauthorized('Usuário e senha não conferem.'))
+    if (user && !user.authenticate(password)) {
+      return next(new errors.Unauthorized(messages.wrongPassword))
     }
     req._params = { email, cleanPw: password }
-    req._jwt = _.pick(user, ['_id', 'roles'])
-    next()
+    req._result = user
+    return next()
   } catch (error) {
     console.error(error)
-    next(error)
+    return next(error)
   }
 }
 
-export const authenticateFromGoogle = (req, res) => {
+export const authenticateFromGoogle = (req, res, next) => {
   try {
     const { _auth } = req
     const token = jwt.sign({ id: _auth.id, roles: _auth.roles }, JWT_SECRET)
-    return res.json({ token, auth })
+    return res.json({ token })
   } catch (error) {
     console.error(error)
-    next(error)
+    return next(error)
   }
 }
 
 export const generateJWT = (req, res, next) => {
   try {
-    const { _jwt } = req
-    const token = jwt.sign(_jwt, JWT_SECRET)
-    return res.json({ token, _jwt })
+    const { _result } = req
+    const payload = _.pick(_result, ['_id', 'roles'])
+    const token = jwt.sign(payload, JWT_SECRET)
+    return res.json({ token, payload })
   } catch (error) {
     console.error(error)
-    next(error)
-  }
-}
-
-export const create = async (req, res, next) => {
-  try {
-    const { _newUser, _params } = req
-    if (!_newUser) return next()
-    const user = await User(_params).save().catch(err => err)
-
-    // Handle errors
-    if (isError(user)) return next(handleDbErrors(user))
-    
-    // Go to next middleware to get token
-    req._jwt = _.pick(user, ['_id', 'roles'])
-    next()
-  } catch (error) {
-    console.error(error)
-    next(error)    
+    return next(error)
   }
 }

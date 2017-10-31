@@ -1,4 +1,4 @@
 import isError from './isError'
-import handleDbErrors from './handleDbErrors'
+import handleErrors from './handleErrors'
 
-export { isError, handleDbErrors }
+export { isError, handleErrors }

@@ -1,44 +1,56 @@
 import mongoose from 'mongoose'
 import bcrypt from 'bcrypt'
+import mongooseHidden from 'mongoose-hidden'
+import mongooseQuery from 'mongoose-query'
+
+import doulaSchema from './doula'
+import clientSchema from './client'
 
 const userSchema = mongoose.Schema({
-  name: { 
-    type: String, 
+  _id: {
+    type: mongoose.Schema.Types.ObjectId
   },
-  email: { 
-    type: String, 
-    required: true, 
-    unique: true 
+  name: {
+    type: String
   },
-  password: { 
+  email: {
+    hideJSON: true,
+    type: String,
+    required: true,
+    unique: true
+  },
+  password: {
     type: String
   },
   birthdate: {
     type: Date
   },
-  bio: { 
-    type: String 
+  bio: {
+    type: String
   },
   image: {
     type: String
   },
-  geolocation: { 
-    type: String 
+  geolocation: {
+    type: String
   },
   roles: {
     type: Number,
     default: 1,
     required: true
   },
-  doula: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'Doula'
-  },
-  client: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'Client'
-  }
+  asDoula: doulaSchema,
+  asClient: clientSchema
 }, { timestamps: true })
+
+userSchema.plugin(mongooseHidden({
+  defaultHidden: {
+    password: true
+  }
+}))
+userSchema.plugin(mongooseQuery, {
+  ignoreKeys: ['password', 'email']
+})
 
 userSchema.virtual('cleanPw')
   .set(function (cleanPw) {
