@@ -2,14 +2,12 @@ import mongoose from 'mongoose'
 import bcrypt from 'bcrypt'
 import mongooseHidden from 'mongoose-hidden'
 import mongooseQuery from 'mongoose-query'
+import mongooseDelete from 'mongoose-delete'
 
 import doulaSchema from './doula'
 import clientSchema from './client'
 
 const userSchema = mongoose.Schema({
-  _id: {
-    type: mongoose.Schema.Types.ObjectId
-  },
   name: {
     type: String
   },
@@ -50,6 +48,12 @@ userSchema.plugin(mongooseHidden({
 }))
 userSchema.plugin(mongooseQuery, {
   ignoreKeys: ['password', 'email']
+})
+
+userSchema.plugin(mongooseDelete, {
+  deletedAt: true,
+  deletedBy: true,
+  overrideMethods: true
 })
 
 userSchema.virtual('cleanPw')

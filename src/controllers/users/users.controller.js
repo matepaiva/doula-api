@@ -15,8 +15,6 @@ export const authenticateFromPassword = async (req, res, next) => {
     const user = await User.findOne({ email }, 'password _id roles')
     if (isError(user)) return next(handleErrors(user))
 
-    req._isNew = !user
-
     if (user && !user.authenticate(password)) {
       return next(new errors.Unauthorized(messages.wrongPassword))
     }

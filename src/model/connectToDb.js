@@ -12,7 +12,7 @@ import bluebird from 'bluebird'
   Number
     min: Number, creates a validator that checks if the value is greater than or equal to the given minimum.
     max: Number, creates a validator that checks if the value is less than or equal to the given maximum.
-  
+
   Date
     min: Date
     max: Date
@@ -20,6 +20,6 @@ import bluebird from 'bluebird'
 
 mongoose.Promise = bluebird
 
-const connectToDb = async (dbUser, dbPassword, dbAddress) => await mongoose.connect(`mongodb://${dbUser}:${dbPassword}@${dbAddress}`, { useMongoClient: true })
+const connectToDb = async (dbUser, dbPassword, dbAddress) => mongoose.connect(`mongodb://${dbUser}:${dbPassword}@${dbAddress}`, { useMongoClient: true })
 
 export default connectToDb

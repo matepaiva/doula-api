@@ -8,11 +8,25 @@ import * as messages from '../../i18n/messages'
  */
 export const documentation = (req, res) => res.json({ docs: 'will be placed here' })
 
+export const override = (obj) => async (req, res, next) => {
+  try {
+    _.forEach(obj, (val, key) => {
+      _.set(req, key, _.get(req, val))
+    })
+    next()
+  } catch (error) {
+    console.error(error)
+    return next(handleErrors(error))
+  }
+}
+
 export const create = Model => async (req, res, next) => {
   try {
-    const { _isNew, _params } = req
-    if (!_isNew) return next()
-    const instance = await new Model(_params).save()
+    if (!req._params) req._params = { ...req.query, ...req.params, ...req.body }
+    const { _result, _params } = req
+    if (_result) return next()
+    const params = _.omit(_params, '_id')
+    const instance = await new Model(params).save()
     req._result = instance
     return next()
   } catch (error) {
@@ -25,6 +39,19 @@ export const query = Model => async (req, res, next) => {
   try {
     if (!req._query) req._query = { ...(req._query || {}), ...req.query }
     const instance = await Model.query(req._query)
+    req._result = instance
+    return next()
+  } catch (error) {
+    console.error(error)
+    return next(handleErrors(error))
+  }
+}
+
+export const del = Model => async (req, res, next) => {
+  try {
+    const { id } = req.params
+    const _id = req._id || id
+    const instance = await Model.delete({ _id }, req.user._id)
     req._result = instance
     return next()
   } catch (error) {
@@ -49,7 +76,7 @@ export const findById = (Model) => async (req, res, next) => {
 export const findByIdAndUpdate = (Model, subModel) => async (req, res, next) => {
   try {
     if (!req._update) req._update = { ...req.query, ...req.params, ...req.body }
-    req._id = req._id || req._update._id
+    req._id = req._id || req._update.id
     req._update = _.omit(req._update, '_id')
     const { _id, _update } = req
     const instance = await Model.findById(_id)

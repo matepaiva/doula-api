@@ -15,16 +15,17 @@ export default (err) => {
     if (err.name === 'CastError') {
       return new errors.BadRequest(messages.badRequest, _originalError(err))
     }
+
+    if (err.name === 'ValidationError' && err.message && err.message.includes('required')) {
+      return new errors.UnprocessableEntity(messages.missingParameters, _originalError(err))
+    }
+
     if (err.name === 'ValidationError' || (err.message && err.message.includes('custom validator'))) {
       return new errors.UnprocessableEntity(messages.unprocessableEntity, _originalError(err))
     }
 
     if (err.message && err.message.toLowerCase().includes('access denied')) {
       return new errors.Forbidden(messages.forbidden, _originalError(err.message))
-    }
-
-    if (err.message && err.message.includes('required')) {
-      return new errors.UnprocessableEntity(messages.missingParameters, _originalError(err))
     }
 
     if (err.message && _.chain(err.message).split(' ').first().value() === 'E11000') {

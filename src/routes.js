@@ -7,9 +7,9 @@ import errors from 'throw.js'
 
 // #region LOCAL IMPORT
 import noop from './utils/noop'
-import { requiredParams, create, query, findById, findByIdAndUpdate, documentation, res, getId } from './controllers/global/global.controller'
+import { requiredParams, create, query, findById, findByIdAndUpdate, documentation, del, res, getId, override } from './controllers/global/global.controller'
 import { authenticateFromPassword, generateJWT } from './controllers/users/users.controller'
-import { User } from './model/index'
+import { User, Chat } from './model/index'
 // #endregion
 
 // #region GLOBAL CONSTANTS
@@ -27,10 +27,10 @@ const {
 const routes = Router()
 // #endregion
 
-routes.post('/auth/pw', requiredParams([ 'email', 'password' ]), authenticateFromPassword, create(User), generateJWT)
 // #region PUBLIC ROUTES
-routes.post('/auth/google', noop)
-routes.post('/auth/facebook', noop)
+routes.post('/users', requiredParams([ 'email', 'password' ]), authenticateFromPassword, create(User), generateJWT)
+routes.post('/users/google', noop)
+routes.post('/users/facebook', noop)
 // #endregion
 
 // #region Validating JWT for every private route
@@ -43,14 +43,22 @@ routes.get('/', documentation)
 
 // USER ROUTES
 routes.put('/users', getId('user'), findByIdAndUpdate(User), res())
+routes.put('/users/:id', findByIdAndUpdate(User), res())
+routes.delete('/users/:id', del(User), res())
 routes.get('/users/:id', findById(User), res())
 routes.get('/users', query(User), res())
+
 // DOULA ROUTES
 routes.put('/doulas', getId('user'), findByIdAndUpdate(User, 'asDoula'), res())
 
 // CLIENT ROUTES
 routes.put('/clients', getId('user'), findByIdAndUpdate(User, 'asClient'), res())
 // #endregion
+
+// CHAT ROUTES
+routes.post('/chats', override({ 'body.from': 'user._id' }), create(Chat), res())
+routes.get('/chats', override({ 'query.from': 'user._id' }), query(Chat), res())
+routes.delete('/chats/:id', del(Chat), res())
 
 // #region Injecting public and private routes to server router
 export default routes
