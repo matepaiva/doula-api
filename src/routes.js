@@ -7,7 +7,7 @@ import errors from 'throw.js'
 
 // #region LOCAL IMPORT
 import noop from './utils/noop'
-import { requiredParams, create, query, findById, findByIdAndUpdate, documentation, del, res, getId, override } from './controllers/global/global.controller'
+import { requiredParams, create, query, findById, findByIdAndUpdate, documentation, findByIdAndDelete, res, getId, override } from './controllers/global/global.controller'
 import { authenticateFromPassword, generateJWT } from './controllers/users/users.controller'
 import { User, Chat } from './model/index'
 // #endregion
@@ -28,7 +28,7 @@ const routes = Router()
 // #endregion
 
 // #region PUBLIC ROUTES
-routes.post('/users', requiredParams([ 'email', 'password' ]), authenticateFromPassword, create(User), generateJWT)
+routes.post('/users', requiredParams([ 'email', 'password' ]), authenticateFromPassword, create(User), generateJWT, res())
 routes.post('/users/google', noop)
 routes.post('/users/facebook', noop)
 // #endregion
@@ -44,7 +44,7 @@ routes.get('/', documentation)
 // USER ROUTES
 routes.put('/users', getId('user'), findByIdAndUpdate(User), res())
 routes.put('/users/:id', findByIdAndUpdate(User), res())
-routes.delete('/users/:id', del(User), res())
+routes.delete('/users/:id', findByIdAndDelete(User), res())
 routes.get('/users/:id', findById(User), res())
 routes.get('/users', query(User), res())
 
@@ -58,7 +58,7 @@ routes.put('/clients', getId('user'), findByIdAndUpdate(User, 'asClient'), res()
 // CHAT ROUTES
 routes.post('/chats', override({ 'body.from': 'user._id' }), create(Chat), res())
 routes.get('/chats', override({ 'query.from': 'user._id' }), query(Chat), res())
-routes.delete('/chats/:id', del(Chat), res())
+routes.delete('/chats/:_id', override({ 'body.from': 'user._id' }), findByIdAndDelete(Chat), res())
 
 // #region Injecting public and private routes to server router
 export default routes

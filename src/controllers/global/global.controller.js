@@ -47,11 +47,12 @@ export const query = Model => async (req, res, next) => {
   }
 }
 
-export const del = Model => async (req, res, next) => {
+export const findByIdAndDelete = (Model) => async (req, res, next) => {
   try {
-    const { id } = req.params
-    const _id = req._id || id
-    const instance = await Model.delete({ _id }, req.user._id)
+    if (!req._params) req._params = { ...req.query, ...req.params, ...req.body }
+    console.log(req._params)
+    const instance = await Model.delete(req._params, req.user._id)
+    if (instance.nModified === 0) next(new errors.NotFound())
     req._result = instance
     return next()
   } catch (error) {

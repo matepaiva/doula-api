@@ -1,20 +1,17 @@
 import mongoose from 'mongoose'
 import mongooseDelete from 'mongoose-delete'
 import mongooseQuery from 'mongoose-query'
-import mongooseAutopopulate from 'mongoose-autopopulate'
 
 const chatSchema = mongoose.Schema({
   from: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',
-    required: true,
-    autopopulate: true
+    required: true
   },
   to: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',
-    required: true,
-    autopopulate: true
+    required: true
   },
   content: {
     type: String,
@@ -23,8 +20,6 @@ const chatSchema = mongoose.Schema({
 }, { timestamps: true })
 
 chatSchema.plugin(mongooseQuery)
-
-chatSchema.plugin(mongooseAutopopulate)
 
 chatSchema.plugin(mongooseDelete, {
   deletedAt: true,

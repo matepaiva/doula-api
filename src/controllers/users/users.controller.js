@@ -10,6 +10,7 @@ const { JWT_SECRET } = process.env
 
 export const authenticateFromPassword = async (req, res, next) => {
   try {
+    if (!req._params) req._params = { ...req.query, ...req.params, ...req.body }
     const { email, password } = req._params
 
     const user = await User.findOne({ email }, 'password _id roles')
@@ -43,7 +44,8 @@ export const generateJWT = (req, res, next) => {
     const { _result } = req
     const payload = _.pick(_result, ['_id', 'roles'])
     const token = jwt.sign(payload, JWT_SECRET)
-    return res.json({ token, payload })
+    res._result = { token, payload }
+    return next()
   } catch (error) {
     console.error(error)
     return next(error)
