@@ -7,7 +7,9 @@ import errors from 'throw.js'
 const app = express()
 app.disable('x-powered-by')
 
-app.use(logger('dev', { skip: () => app.get('env') === 'test' }))
+const logType = app.get('env') === 'development' ? 'dev' : 'common'
+app.use(logger(logType, { skip: () => app.get('env') === 'test' }))
+
 app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({ extended: false }))
 
