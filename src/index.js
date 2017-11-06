@@ -3,7 +3,7 @@ import emoji from 'node-emoji'
 import app from './app'
 import { connectToDb } from './model'
 
-const { DB_USER, DB_PASSWORD, DB_ADDRESS, PORT = 8080, NODE_ENV } = process.env
+const { DB_USER, DB_PASSWORD, DB_ADDRESS, PORT = 8080, NODE_ENV = 'development' } = process.env
 
 console.log(`  ${emoji.get('heart')} Environment: ${NODE_ENV}  ${emoji.get('heart')}`)
 console.log(`  ${emoji.get('heart')} Connecting to Database (${DB_ADDRESS})...  ${emoji.get('heart')}`)

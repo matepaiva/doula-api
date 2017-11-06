@@ -1,10 +1,16 @@
+import http from 'http'
 import express from 'express'
 import logger from 'morgan'
 import bodyParser from 'body-parser'
 import routes from './routes'
 import errors from 'throw.js'
+import io from './socketIo'
 
 const app = express()
+const server = http.createServer(app)
+
+io.attach(server)
+
 app.disable('x-powered-by')
 
 const logType = app.get('env') === 'development' ? 'dev' : 'common'
@@ -24,4 +30,4 @@ app.use((err, req, res, next) => {
   res.status(err.statusCode || 500).json(err)
 })
 
-export default app
+export default server

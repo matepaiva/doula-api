@@ -51,8 +51,9 @@
     "mongoose-hidden": "^1.5.0",
     "mongoose-query": "^0.5.1",
     "morgan": "^1.7.0",
-    "rimraf": "^2.6.1",
     "node-emoji": "^1.8.1",
+    "rimraf": "^2.6.1",
+    "socket.io": "^2.0.4",
     "throw.js": "^3.0.1"
   },
   "devDependencies": {
