@@ -44,7 +44,7 @@ export const generateJWT = (req, res, next) => {
     const { _result } = req
     const payload = _.pick(_result, ['_id', 'roles'])
     const token = jwt.sign(payload, JWT_SECRET)
-    res._result = { token, payload }
+    req._result = { token, payload }
     return next()
   } catch (error) {
     console.error(error)
