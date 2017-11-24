@@ -17,7 +17,8 @@ const userSchema = mongoose.Schema({
     required: true,
     unique: true
   },
-  password: {
+  _password: {
+    hideJSON: true,
     type: String
   },
   birthdate: {
@@ -32,19 +33,20 @@ const userSchema = mongoose.Schema({
   geolocation: {
     type: String
   },
-  roles: {
-    type: Number,
-    default: 1,
-    required: true
+  isAdmin: {
+    type: Boolean,
+    default: false
+  },
+  isPremium: {
+    type: Boolean,
+    default: false
   },
   asDoula: doulaSchema,
   asClient: clientSchema
 }, { timestamps: true })
 
 userSchema.plugin(mongooseHidden({
-  defaultHidden: {
-    password: true
-  }
+  defaultHidden: { password: true }
 }))
 userSchema.plugin(mongooseQuery, {
   ignoreKeys: ['password', 'email']
@@ -56,13 +58,12 @@ userSchema.plugin(mongooseDelete, {
   overrideMethods: true
 })
 
-userSchema.virtual('cleanPw')
-  .set(function (cleanPw) {
-    this._password = cleanPw
-    this.password = this.encryptPassword(cleanPw)
+userSchema.virtual('password')
+  .set(function (password) {
+    this._password = this.encryptPassword(password)
   })
   .get(function () {
-    return this._password
+    return this.password
   })
 
 userSchema.methods = {
@@ -74,7 +75,7 @@ userSchema.methods = {
    * @api public
    */
   authenticate: function (plainPassword) {
-    return bcrypt.compareSync(plainPassword, this.password)
+    return bcrypt.compareSync(plainPassword, this._password)
   },
 
   /**

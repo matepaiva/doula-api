@@ -6,7 +6,7 @@ import routes from './routes'
 import errors from 'throw.js'
 import io from './socketIo'
 
-const app = express()
+export const app = express()
 const server = http.createServer(app)
 
 io.attach(server)

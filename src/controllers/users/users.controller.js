@@ -13,13 +13,13 @@ export const authenticateFromPassword = async (req, res, next) => {
     if (!req._params) req._params = { ...req.query, ...req.params, ...req.body }
     const { email, password } = req._params
 
-    const user = await User.findOne({ email }, 'password _id roles')
+    const user = await User.findOne({ email })
     if (isError(user)) return next(handleErrors(user))
 
     if (user && !user.authenticate(password)) {
       return next(new errors.Unauthorized(messages.wrongPassword))
     }
-    req._params = { email, cleanPw: password }
+    req._params = { email, password }
     req._result = user
     return next()
   } catch (error) {
@@ -42,7 +42,12 @@ export const authenticateFromGoogle = (req, res, next) => {
 export const generateJWT = (req, res, next) => {
   try {
     const { _result } = req
-    const payload = _.pick(_result, ['_id', 'roles'])
+    const payload = {
+      ..._.pick(_result, [ '_id', 'isAdmin', 'isPremium' ]),
+      isDoula: !!_result.asDoula,
+      isClient: !!_result.asClient
+    }
+    //  _.pick(_result, ['_id', 'isAdmin', 'isPremium' ])
     const token = jwt.sign(payload, JWT_SECRET)
     req._result = { token, payload }
     return next()

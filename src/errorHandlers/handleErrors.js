@@ -2,7 +2,7 @@ import errors from 'throw.js'
 import _ from 'lodash'
 import * as messages from '../i18n/messages'
 
-import app from '../app'
+import { app } from '../app'
 
 const _showOriginalError = () => app.get('env') === 'development'
 const _originalError = (originalError) => _showOriginalError() ? { originalError } : undefined
@@ -24,7 +24,7 @@ export default (err) => {
       return new errors.UnprocessableEntity(messages.unprocessableEntity, _originalError(err))
     }
 
-    if (err.message && err.message.toLowerCase().includes('access denied')) {
+    if (err.status === 403 || (err.message && err.message.toLowerCase().includes('access denied'))) {
       return new errors.Forbidden(messages.forbidden, _originalError(err.message))
     }
 

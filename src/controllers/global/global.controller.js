@@ -74,6 +74,16 @@ export const findById = (Model) => async (req, res, next) => {
   }
 }
 
+export const allowAccessTo = (profiles, reducer = 'some') => async (req, res, next) => {
+  try {
+    const { user } = req
+    const hasAccess = profiles[reducer]((profile) => user[`is${profile}`])
+    return hasAccess ? next() : next(handleErrors({ status: 403 }))
+  } catch (error) {
+    return next(handleErrors(error))
+  }
+}
+
 export const findByIdAndUpdate = (Model, subModel) => async (req, res, next) => {
   try {
     if (!req._update) req._update = { ...req.query, ...req.params, ...req.body }

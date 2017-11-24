@@ -7,7 +7,7 @@ import errors from 'throw.js'
 
 // #region LOCAL IMPORT
 import noop from './utils/noop'
-import { requiredParams, create, query, findById, findByIdAndUpdate, documentation, findByIdAndDelete, res, getId, override } from './controllers/global/global.controller'
+import { requiredParams, create, query, findById, findByIdAndUpdate, documentation, findByIdAndDelete, res, getId, override, allowAccessTo } from './controllers/global/global.controller'
 import { authenticateFromPassword, generateJWT } from './controllers/users/users.controller'
 import { User, Chat } from './model/index'
 // #endregion
@@ -43,8 +43,8 @@ routes.get('/', documentation)
 
 // USER ROUTES
 routes.put('/users', getId('user'), findByIdAndUpdate(User), res())
-routes.put('/users/:id', findByIdAndUpdate(User), res())
-routes.delete('/users/:id', findByIdAndDelete(User), res())
+routes.put('/users/:id', allowAccessTo([ 'Admin' ]), findByIdAndUpdate(User), res())
+routes.delete('/users/:id', allowAccessTo([ 'Admin' ]), findByIdAndDelete(User), res())
 routes.get('/users/:id', findById(User), res())
 routes.get('/users', query(User), res())
 
