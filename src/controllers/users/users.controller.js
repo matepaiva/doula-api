@@ -47,7 +47,6 @@ export const generateJWT = (req, res, next) => {
       isDoula: !!_result.asDoula,
       isClient: !!_result.asClient
     }
-    //  _.pick(_result, ['_id', 'isAdmin', 'isPremium' ])
     const token = jwt.sign(payload, JWT_SECRET)
     req._result = { token, payload }
     return next()
