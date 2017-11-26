@@ -42,11 +42,11 @@ export const authenticateFromGoogle = (req, res, next) => {
 export const generateJWT = (req, res, next) => {
   try {
     const { _result } = req
-    const payload = {
+    const payload = _.pickBy({
       ..._.pick(_result, [ '_id', 'isAdmin', 'isPremium' ]),
       isDoula: !!_result.asDoula,
       isClient: !!_result.asClient
-    }
+    })
     const token = jwt.sign(payload, JWT_SECRET)
     req._result = { token, payload }
     return next()
